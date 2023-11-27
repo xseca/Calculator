@@ -1,44 +1,73 @@
 import java.util.Scanner;
 
-public class Calculator
+public class Calculator {
 
     public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
-        double num1, num2, result;
-        char operator;
+        Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Калькулятор");
-        System.out.print("Введите первое число: ");
-        num1 = input.nextDouble();
+        boolean continueCalculation = true;
+        while (continueCalculation) {
+            System.out.println("Введите операцию (например, '2 + 3') или 'exit' для выхода:");
 
-        System.out.print("Введите оператор (+, -, *, /): ");
-        operator = input.next().charAt(0);
+            String input = scanner.nextLine();
 
-        System.out.print("Введите второе число: ");
-        num2 = input.nextDouble();
-
-        switch (operator) {
-            case '+':
-                result = num1 + num2;
-                break;
-            case '-':
-                result = num1 - num2;
-                break;
-            case '*':
-                result = num1 * num2;
-                break;
-            case '/':
-                if (num2 == 0) {
-                    System.out.println("Ошибка: деление на ноль");
-                    return;
+            if (input.equalsIgnoreCase("exit")) {
+                continueCalculation = false;
+                System.out.println("Программа завершена.");
+            } else {
+                try {
+                    int result = calculate(input);
+                    System.out.println("Результат: " + result);
+                } catch (Exception e) {
+                    System.out.println("Ошибка: " + e.getMessage());
+                    continueCalculation = false; // Завершение приложения после ошибки
                 }
-                result = num1 / num2;
-                break;
-            default:
-                System.out.println("Некорректный оператор");
-                return;
+            }
+        }
+    }
+
+    public static int calculate(String input) throws Exception {
+        String[] tokens = input.split(" ");
+
+        if (tokens.length != 3 || tokens[1].length() != 1 || !"+-*/".contains(tokens[1])) {
+            throw new Exception("Некорректный формат операции");
         }
 
-        System.out.println("Результат: " + result);
+        int a;
+        int b;
+        try {
+            a = Integer.parseInt(tokens[0]);
+            b = Integer.parseInt(tokens[2]);
+        } catch (NumberFormatException e) {
+            throw new Exception("Неверный формат чисел");
+        }
+
+        if ((a < 1 || a > 10) || (b < 1 || b > 10)) {
+            throw new Exception("Числа должны быть от 1 до 10");
+        }
+
+        int result;
+        switch (tokens[1]) {
+            case "+":
+                result = a + b;
+                break;
+            case "-":
+                result = a - b;
+                break;
+            case "*":
+                result = a * b;
+                break;
+            case "/":
+                if (b == 0) {
+                    throw new Exception("Деление на ноль");
+                }
+                result = a / b; // Результатом является только целая часть от деления
+                break;
+            default:
+                throw new Exception("Некорректная операция");
+        }
+
+        return result;
     }
 }
+
